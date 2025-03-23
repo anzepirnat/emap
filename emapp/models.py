@@ -41,7 +41,7 @@ class Results(models.Model):
     score = models.CharField(max_length=10)
     
     def __str__(self):
-        return f"User {self.user.username} - Sequence {self.sequence.id} - Score {self.score}"
+        return f"User {self.user.username} - Image {self.image_idx}: {self.image} - Score {self.score}"
 
 # Just testing 
 class TestTableMigration(models.Model):

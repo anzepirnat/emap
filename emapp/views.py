@@ -32,16 +32,33 @@ def app(request):
 
 def get_image(request):
     if request.method == "POST":
-        #time.sleep(2)
-        image_name, image_idx = pseudo_random(request.user.id)#random.choice(IMAGE_LIST)
+        
+        try:
+            image_name, image_idx, image_idx_in_set = pseudo_random(request.user.id)
+        except Exception as e:
+            log.error(f"Error getting image: {e}")
+            return JsonResponse({"error": str(e)}, status=400)
+        
+        if image_name=="halfway-through" and image_idx==-1:
+            result = Results(
+                user_id=request.user.id,
+                image=image_name,
+                image_idx=image_idx,
+                score=""
+            )
+            result.save()
+            return JsonResponse({"message": "Halfway through the experiment"}, status=200)
+        
+        if image_name=="experiment-finished" and image_idx==101:
+            return JsonResponse({"message": "Experiment finished"}, status=200)
+        
         image_path = "images/" + image_name + ".jpg"
         image_url = static(image_path)
-        image_idx += 1
-        log.info(f"{image_url}, {image_idx}")
         response_data = {
             "image_url": image_url,
             "image_name": image_name,
-            "image_idx": image_idx
+            "image_idx": image_idx,
+            "image_idx_in_set": image_idx_in_set
         }
         log.info(f"response_data: {response_data}")
         return JsonResponse(response_data)

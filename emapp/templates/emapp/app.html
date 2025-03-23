@@ -6,17 +6,27 @@
     <title>Image Selection App</title>
 </head>
 <body>
-    <h1>Welcome to the Image Selection App!</h1>
 
     <button id="startBtn">Start</button>
 
     <div id="imageContainer" style="display: none;">
         <img id="displayImage" src="" alt="Loading..." style="width: 300px;">
-        <b id="imageIdx"></b><b> / 25</b>
+        <b id="imageIdx" style="display: none;"></b>
+        <b id="imageIdxInSet"></b><b> / 25</b>
         <p id="imageName" style="display: none;"></p>
         <br>
         <button id="yesBtn">Yes</button>
         <button id="noBtn">No</button>
+    </div>
+
+    <div id="halfwayContainer" style="display: none;">
+        <p>Hvala, ta del eksperimenta ste zaključili. Sledi drugi del, kjer se pravilo spremeni. Vprašanje o enakosti slike se bo nanašalo na dve slike pred prikazano sliko.</p>
+    </div>
+
+    <div id="finishContainer" style="display: none;">
+        <p>Hvala, eksperiment ste zaključili. Prosimo vas, da odgovorite še na vprašanja, ki sledijo.</p>
+        <p>Začnete tako, da kliknete gumb "Nadaljujte".</p>
+        <button id="anketa1ka" onclick="window.location.href='https://www.1ka.si/d/sl';">Nadaljujte</button>
     </div>
 
     <script>
@@ -61,6 +71,8 @@
                     document.getElementById("displayImage").src = data.image_url;
                     document.getElementById("imageContainer").style.display = "block";
                     document.getElementById("startBtn").style.display = "none";
+                    document.getElementById("halfwayContainer").style.display = "none";
+                    document.getElementById("finishContainer").style.display = "none";
                 }
                 if (data.image_name) {
                     console.log("Image name:", data.image_name);
@@ -69,6 +81,25 @@
                 if (data.image_idx) {
                     console.log("Image index:", data.image_idx);
                     document.getElementById("imageIdx").textContent = data.image_idx;
+                }
+                if (data.image_idx_in_set) {
+                    console.log("Image index in set:", data.image_idx_in_set);
+                    document.getElementById("imageIdxInSet").textContent = data.image_idx_in_set;
+                }
+                if (data.message) {
+                    console.log(data.message);
+                    if (data.message === "Halfway through the experiment") {
+                        document.getElementById("startBtn").style.display = "block";
+                        document.getElementById("imageContainer").style.display = "none";
+                        document.getElementById("halfwayContainer").style.display = "block";
+                        document.getElementById("finishContainer").style.display = "none";
+                    }
+                    if (data.message === "Experiment finished") {
+                        document.getElementById("startBtn").style.display = "none";
+                        document.getElementById("imageContainer").style.display = "none";
+                        document.getElementById("halfwayContainer").style.display = "none";
+                        document.getElementById("finishContainer").style.display = "block";
+                    }
                 }
             })
             .catch(error => {
@@ -119,9 +150,10 @@
         }
 
         function loadBlankImage() {
-            document.getElementById("displayImage").src = "";
             document.getElementById("imageContainer").style.display = "none";
             document.getElementById("startBtn").style.display = "none";
+            document.getElementById("halfwayContainer").style.display = "none";
+            document.getElementById("finishContainer").style.display = "none";
         }
     </script>
 </body>

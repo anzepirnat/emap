@@ -1,5 +1,5 @@
 import pandas as pd
-from .models import Sequence, UserSequence
+from .models import Sequence, UserSequence, Results
 from django.contrib.auth.models import User
 from django.db import connection
 
@@ -94,10 +94,12 @@ def excel_to_db(file):
 
     return "Data imported successfully!"
 
+
 def reset_auto_increment(table_name):
     """ Reset auto-increment counter for a table in MariaDB """
     with connection.cursor() as cursor:
         cursor.execute(f"ALTER TABLE {table_name} AUTO_INCREMENT = 1")
+
         
 def pseudo_random(user_id: int) -> str:
     """Pseudo-randomly select an image from the list, with the generated table in RDS
@@ -109,27 +111,63 @@ def pseudo_random(user_id: int) -> str:
         str: Image name
     """
     log.debug(f"User ID: {user_id}")
-    user_sequences = UserSequence.objects.filter(user_id=user_id).values_list(
-        "seq_N1_1", "seq_N1_2", # Naloga N1 
-        "seq_N2_1", "seq_N2_2" # Naloga N2
-    ).first()
     
-    first_25 = user_sequences[0] # Naloga N1, čutsveno neobremenilne (N1_1)
-    second_25 = user_sequences[1] # Naloga N1, čutsveno obremenilne (N1_2)
-    third_25 = user_sequences[2] # Naloga N2, čutsveno neobremenilne (N2_1)
-    fourth_25 = user_sequences[3] # Naloga N2, čutsveno obremenilne (N2_2)
-    log.info(f"User {user_id}: first_25={first_25}, second_25={second_25}, third_25={third_25}, fourth_25={fourth_25}")
+    # SELECT image_idx FROM results WHERE user_id = user_id ORDER BY id DESC LIMIT 1
+    last_image_idx = Results.objects.filter(user_id=user_id).order_by('-image_idx').values_list('image_idx', flat=True).first()
+    log.info(f"Last image index: {last_image_idx}, type: {type(last_image_idx)}")
     
-    # For now just use the first in the first 25
-    # TODO - implement the logic for the other 3
-    image_list = Sequence.objects.values_list('nms_N1_1', flat=True)
-    log.info(f"Image list: {image_list}")
-    
-    # For now just take first image from the list
-    # TODO - implement the logic for other images
-    image_idx = 0
-    image = image_list[image_idx]
-    log.info(f"Image/Index selected: {image}/{image_idx}")
-    
-    return image, image_idx
+    if last_image_idx is None:
+        image_idx = 1
+        log.info("There are no images yet, starting with the first")
+        first_25 = UserSequence.objects.filter(user_id=user_id).values_list("seq_N1_1", flat=True).first()
+        log.info(f"First 25: {first_25}")
+        image_list = Sequence.objects.values_list(first_25, flat=True)
+        log.info(f"Image list: {image_list}")
+        return image_list[image_idx-1], image_idx, image_idx
+    elif last_image_idx < 25:
+        image_idx = last_image_idx + 1
+        log.info(f"First 25 images: {image_idx} / 25")
+        first_25 = UserSequence.objects.filter(user_id=user_id).values_list("seq_N1_1", flat=True).first()
+        log.info(f"First 25: {first_25}")
+        image_list = Sequence.objects.values_list(first_25, flat=True)
+        log.info(f"Image list: {image_list}")
+        return image_list[image_idx-1], image_idx, image_idx_in_set
+    elif last_image_idx < 50:
+        image_idx = last_image_idx + 1
+        image_idx_in_set = image_idx - 25
+        log.info(f"Second 25 images: {image_idx_in_set} / 25")
+        second_25 = UserSequence.objects.filter(user_id=user_id).values_list("seq_N1_2", flat=True).first()
+        log.info(f"Second 25: {second_25}")
+        image_list = Sequence.objects.values_list(second_25, flat=True)
+        log.info(f"Image list: {image_list}")
+        return image_list[image_idx_in_set-1], image_idx, image_idx_in_set
+    elif last_image_idx < 75:
+        if last_image_idx == 50:
+            half_flag_up = Results.objects.filter(user_id=user_id, image_idx=-1).exists()
+            if not half_flag_up:
+                log.info("Halfway through the experiment, raising flag")
+                return "halfway-through", -1, -1
+        image_idx = last_image_idx + 1
+        image_idx_in_set = image_idx - 50
+        log.info(f"Third 25 images: {image_idx_in_set} / 25")
+        third_25 = UserSequence.objects.filter(user_id=user_id).values_list("seq_N2_1", flat=True).first()
+        log.info(f"Third 25: {third_25}")
+        image_list = Sequence.objects.values_list(third_25, flat=True)
+        log.info(f"Image list: {image_list}")
+        return image_list[image_idx_in_set-1], image_idx, image_idx_in_set
+    elif last_image_idx < 100:
+        image_idx = last_image_idx + 1
+        image_idx_in_set = image_idx - 75
+        log.info(f"Fourth 25 images: {image_idx_in_set} / 25")
+        fourth_25 = UserSequence.objects.filter(user_id=user_id).values_list("seq_N2_2", flat=True).first()
+        log.info(f"Fourth 25: {fourth_25}")
+        image_list = Sequence.objects.values_list(fourth_25, flat=True)
+        log.info(f"Image list: {image_list}")
+        return image_list[image_idx_in_set-1], image_idx, image_idx_in_set
+    elif last_image_idx == 100:
+        log.info("Experiment is over for user {user_id}")
+        return "experiment-finished", 101, 51
+    else:
+        log.error("Invalid image index")
+        raise Exception("Invalid image index")
     
