@@ -1,0 +1,22 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prijava</title>
+</head>
+<body>
+    <div class="container">
+        <head>
+            <h1>Prijava</h1>
+        </head>
+        <main>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Prijavi se</button>
+                <button type="button" onclick="window.location.href='{% url 'landing_page' %}'">Prekliči</button>
+            </form>
+        </main>
+    </div>
+</body>
+</html>
