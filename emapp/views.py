@@ -10,31 +10,23 @@ from django.contrib.auth.decorators import login_required
 import ast
 from django.core.exceptions import ValidationError
 from .forms import UploadExcelForm
-from .utils import excel_to_db, log
+from .utils import excel_to_db, log, reset_auto_increment, pseudo_random
 from django.db import connection
 import os
 from django.conf import settings
+from django.templatetags.static import static
 
-log.error(f"settings.BASE_DIR: {settings.BASE_DIR}")
 IMAGE_LIST = [os.path.join("images", image) for image in os.listdir(os.path.join(settings.BASE_DIR, "static/images"))]
-log.error(f"IMAGE_LIST: {IMAGE_LIST}")
-#IMAGE_LIST = [
-#    "images/1.jpg",
-#    "images/Archery 1.jpg",
-#    "images/Bar-2.jpg",
-#    #str(os.path.join(settings.BASE_DIR, "static/images/Bar-2.jpg")),
-#    #str(os.path.join(settings.BASE_DIR, "static/images/Boxing-2.jpg")),
-#]
 
 
 def landing_page(request):
     log.info("Landing page accessed")
     return render(request, "emapp/landing_page.html")
 
+
 def app(request):
     return render(request, "emapp/app.html")
 
-from django.templatetags.static import static
 
 def get_image(request):
     if request.method == "POST":
@@ -48,10 +40,6 @@ def get_image(request):
     
     return JsonResponse({"error": "Invalid request"}, status=400)
 
-def reset_auto_increment(table_name):
-    """ Reset auto-increment counter for a table in MariaDB """
-    with connection.cursor() as cursor:
-        cursor.execute(f"ALTER TABLE {table_name} AUTO_INCREMENT = 1")
 
 def edit_data(request):
     if request.method == 'POST' and request.FILES['excel_file']:
