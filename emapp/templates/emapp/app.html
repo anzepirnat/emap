@@ -23,11 +23,17 @@
         document.getElementById("startBtn").addEventListener("click", loadNewImage);
         document.getElementById("yesBtn").addEventListener("click", function() {
             postYes();
-            loadNewImage();
+            loadBlankImage();
+            setTimeout(function() {
+                loadNewImage();
+            }, 2000);
         });
         document.getElementById("noBtn").addEventListener("click", function() {
             postNo();
-            loadNewImage();
+            loadBlankImage();
+            setTimeout(function() {
+                loadNewImage();
+            }, 2000);
         });
 
         function getCSRFToken() {
@@ -110,6 +116,12 @@
             .catch(error => {
                 console.error("Error:", error);
             });
+        }
+
+        function loadBlankImage() {
+            document.getElementById("displayImage").src = "";
+            document.getElementById("imageContainer").style.display = "none";
+            document.getElementById("startBtn").style.display = "none";
         }
     </script>
 </body>
