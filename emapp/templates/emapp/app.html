@@ -6,34 +6,144 @@
     <title>Image Selection App</title>
 </head>
 <body>
+    <style>
+        :root {
+            --inter-color: #658E9C; /* Color for interactables like button and sliders... */
+            --inter-color-darkened: #50727d; /* Darkened version of the interactable color */
+            --main-color: #eeeeee; /* Main color for the page */
+            --secondary-color: #daddaa; /* Secondary color for the page */
+            --secondary-color-ligtened: #eff0d9;
+            --secondary-color-darkened: #b4b59f;
+            --accent-color: #282331; /* Accent color for the page */
+        }
 
-    <div id="startTextContainer">
-        <p>Hvala za soglasje sodelovanja v eksperimentu. Trajal bo okrog 10 min. V prvem delu vam bomo kazali slike eno za drugo. Vaša naloga bo, da pri vsaki sliki poveste ali je enaka kot ena slika pred njo.  Navodilo za drugi del sledi po prvem delu. Reševanje začnete s klikom na "Start".</p>
-        <br>
-        <p>Če ste že začeli z reševanjem eksperimenta, lahko s klikom na 'Start' nadaljujete.</p>
+        p, b {
+            font-size: 1.2em;
+            font-family: sans-serif;
+        }
+
+        button {
+            background-color: var(--inter-color);
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 1.2em;
+            font-family: sans-serif;
+            margin: 4px 2px; /*   4px 10px; */
+            cursor: pointer;
+            border-radius: 12px;
+        }
+
+        .wrapper, #imageContainer, #finishContainer {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: calc(100vw - 15px);
+            height: calc(100vh - 17.5px);
+            gap: 7.5px;
+            box-sizing: border-box;
+        }
+        
+        .firstTwoThirdsContainer {
+            flex: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid black;
+            background-color: lightblue;
+            height: 100%;
+            padding: 50px;
+            box-sizing: border-box;
+        }
+        
+        .laterOneThirdContainer {
+            flex: 1;
+            display: flex;
+            flex-direction: column; /* Ensures buttons and text stack properly */
+            justify-content: center;
+            align-items: center;
+            border: 1px solid black;
+            background-color: lightgreen;
+            height: 100%;
+            padding: 50px;
+            box-sizing: border-box;
+        }
+
+        .counterContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            padding: 10%;
+            gap: 5px;
+            width: 100%;
+        }
+
+        .buttonContainer {
+            display: flex;
+            justify-content: center;
+            box-sizing: border-box;
+            padding: 10%;
+            gap: 20%;
+            width: 100%;
+        }
+
+    </style>
+
+    <div class="wrapper" id="startContainer">
+
+        <div id="startTextContainer" class="firstTwoThirdsContainer" style="display: block; text-align: center;">
+            <p style="max-width: 80%;">Hvala za soglasje sodelovanja v eksperimentu. Trajal bo okrog 10 min. V prvem delu vam bomo kazali slike eno za drugo. Vaša naloga bo, da pri vsaki sliki poveste ali je enaka kot ena slika pred njo.  Navodilo za drugi del sledi po prvem delu. Reševanje začnete s klikom na "Start".</p>
+            <br>
+            <p style="max-width: 80%;">Če ste že začeli z reševanjem eksperimenta, lahko s klikom na 'Start' nadaljujete.</p>
+        </div>
+
+        <div id="halfwayContainer" class="firstTwoThirdsContainer" style="display: none;">
+            <p>Hvala, ta del eksperimenta ste zaključili. Sledi drugi del, kjer se pravilo spremeni. Vprašanje o enakosti slike se bo nanašalo na dve slike pred prikazano sliko. S klikom na "Start" začnete drugi del.</p>
+        </div>
+        
+        <div id="startBtnContainer" class="laterOneThirdContainer">
+            <button id="startBtn">Start</button>
+        </div>
+
     </div>
-    
-    <button id="startBtn">Start</button>
 
     <div id="imageContainer" style="display: none;">
-        <img id="displayImage" src="" alt="Loading..." style="width: 300px;">
-        <b id="imageIdx" style="display: none;"></b>
-        <b id="imageIdxInSet"></b><b> / 25</b>
-        <p id="imageName" style="display: none;"></p>
-        <br>
-        <button id="yesBtn">Yes</button>
-        <button id="noBtn">No</button>
-    </div>
+        <div class="firstTwoThirdsContainer">
+            <img id="displayImage" src="" alt="Loading..." style="max-width: 100%; max-height: 100%;">
+        </div>
+        
+        <div id="yesnoContainer" class="laterOneThirdContainer">
+            <p>Ali je slika enaka kot ena slika pred njo?</p>
+            
+            <div class="counterContainer">
+                <b id="imageIdxInSet"></b><b> / 25</b>
+            </div>
 
-    <div id="halfwayContainer" style="display: none;">
-        <p>Hvala, ta del eksperimenta ste zaključili. Sledi drugi del, kjer se pravilo spremeni. Vprašanje o enakosti slike se bo nanašalo na dve slike pred prikazano sliko. S klikom na "Start" začnete drugi del.</p>
+            <div class="buttonContainer">
+                <button id="yesBtn">Yes</button>
+                <button id="noBtn">No</button>
+            </div>
+        </div>
+
+        <b id="imageIdx" style="display: none;"></b>
+        <p id="imageName" style="display: none;"></p>
     </div>
 
     <div id="finishContainer" style="display: none;">
-        <p>Hvala, eksperiment ste zaključili. Prosimo vas, da odgovorite še na vprašanja, ki sledijo.</p>
-        <p>Začnete tako, da kliknete gumb "Nadaljujte".</p>
-        <button id="anketa1ka" onclick="window.location.href='https://www.1ka.si/d/sl';">Nadaljujte</button>
+        <div class="firstTwoThirdsContainer">
+            <p>Hvala, eksperiment ste zaključili. Prosimo vas, da odgovorite še na vprašanja, ki sledijo. Začnete tako, da kliknete gumb "Nadaljujte".</p>
+        </div>
+
+        <div class="laterOneThirdContainer">
+            <button id="anketa1ka" onclick="window.location.href='https://www.1ka.si/d/sl';">Nadaljujte</button>
+        </div>
     </div>
+
 
     <script>
         document.getElementById("startBtn").addEventListener("click", loadNewImage);
@@ -75,11 +185,13 @@
             .then(data => {
                 if (data.image_url) {
                     document.getElementById("displayImage").src = data.image_url;
-                    document.getElementById("imageContainer").style.display = "block";
+                    document.getElementById("imageContainer").style.display = "flex";
                     document.getElementById("startTextContainer").style.display = "none";
                     document.getElementById("startBtn").style.display = "none";
+                    document.getElementById("startBtnContainer").style.display = "none";
                     document.getElementById("halfwayContainer").style.display = "none";
                     document.getElementById("finishContainer").style.display = "none";
+                    document.getElementById("startContainer").style.display = "none";
                 }
                 if (data.image_name) {
                     console.log("Image name:", data.image_name);
@@ -98,16 +210,20 @@
                     if (data.message === "Halfway through the experiment") {
                         document.getElementById("startTextContainer").style.display = "none";
                         document.getElementById("startBtn").style.display = "block";
+                        document.getElementById("startBtnContainer").style.display = "flex";
                         document.getElementById("imageContainer").style.display = "none";
-                        document.getElementById("halfwayContainer").style.display = "block";
+                        document.getElementById("halfwayContainer").style.display = "flex";
                         document.getElementById("finishContainer").style.display = "none";
+                        document.getElementById("startContainer").style.display = "flex";
                     }
                     if (data.message === "Experiment finished") {
                         document.getElementById("startTextContainer").style.display = "none";
                         document.getElementById("startBtn").style.display = "none";
+                        document.getElementById("startBtnContainer").style.display = "none";
                         document.getElementById("imageContainer").style.display = "none";
                         document.getElementById("halfwayContainer").style.display = "none";
-                        document.getElementById("finishContainer").style.display = "block";
+                        document.getElementById("finishContainer").style.display = "flex";
+                        document.getElementById("startContainer").style.display = "none";
                     }
                 }
             })
@@ -161,9 +277,11 @@
         function loadBlankImage() {
             document.getElementById("startTextContainer").style.display = "none";
             document.getElementById("startBtn").style.display = "none";
+            document.getElementById("startBtnContainer").style.display = "none";
             document.getElementById("imageContainer").style.display = "none";
             document.getElementById("halfwayContainer").style.display = "none";
             document.getElementById("finishContainer").style.display = "none";
+            document.getElementById("startContainer").style.display = "none";
         }
     </script>
 </body>
