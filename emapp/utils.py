@@ -24,7 +24,9 @@ class log:
     @classmethod
     def info(cls, message):
         cls._get_logger().info(message) 
-    
+
+def replace_space(img_name: str) -> str:
+    return img_name.replace(" ", "_")
 
 def excel_to_db(file):
     # Read the Excel file with pandas (using openpyxl for .xlsx format)
@@ -40,18 +42,18 @@ def excel_to_db(file):
         for _, row in sheet_rnd.iterrows():
             # Create a new Sequence object
             sequence = Sequence(
-                nms_N1_1=row['nms_N1_1'],
-                nms_N1_2=row['nms_N1_2'],
-                nms_N1_3=row['nms_N1_3'],
-                nms_N1_4=row['nms_N1_4'],
-                nms_N2_1=row['nms_N2_1'],
-                nms_N2_2=row['nms_N2_2'],
-                nms_N2_3=row['nms_N2_3'],
-                nms_N2_4=row['nms_N2_4'],
-                nms_N3_1=row['nms_N3_1'],
-                nms_N3_2=row['nms_N3_2'],
-                nms_N3_3=row['nms_N3_3'],
-                nms_N3_4=row['nms_N3_4']
+                nms_N1_1=replace_space(row['nms_N1_1']),
+                nms_N1_2=replace_space(row['nms_N1_2']),
+                nms_N1_3=replace_space(row['nms_N1_3']),
+                nms_N1_4=replace_space(row['nms_N1_4']),
+                nms_N2_1=replace_space(row['nms_N2_1']),
+                nms_N2_2=replace_space(row['nms_N2_2']),
+                nms_N2_3=replace_space(row['nms_N2_3']),
+                nms_N2_4=replace_space(row['nms_N2_4']),
+                nms_N3_1=replace_space(row['nms_N3_1']),
+                nms_N3_2=replace_space(row['nms_N3_2']),
+                nms_N3_3=replace_space(row['nms_N3_3']),
+                nms_N3_4=replace_space(row['nms_N3_4'])
             )
             # Save the sequence
             sequence.save()
