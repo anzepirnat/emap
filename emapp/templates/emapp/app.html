@@ -7,6 +7,12 @@
 </head>
 <body>
 
+    <div id="startTextContainer">
+        <p>Hvala za soglasje sodelovanja v eksperimentu. Trajal bo okrog 10 min. V prvem delu vam bomo kazali slike eno za drugo. Vaša naloga bo, da pri vsaki sliki poveste ali je enaka kot ena slika pred njo.  Navodilo za drugi del sledi po prvem delu. Reševanje začnete s klikom na "Start".</p>
+        <br>
+        <p>Če ste že začeli z reševanjem eksperimenta, lahko s klikom na 'Start' nadaljujete.</p>
+    </div>
+    
     <button id="startBtn">Start</button>
 
     <div id="imageContainer" style="display: none;">
@@ -70,6 +76,7 @@
                 if (data.image_url) {
                     document.getElementById("displayImage").src = data.image_url;
                     document.getElementById("imageContainer").style.display = "block";
+                    document.getElementById("startTextContainer").style.display = "none";
                     document.getElementById("startBtn").style.display = "none";
                     document.getElementById("halfwayContainer").style.display = "none";
                     document.getElementById("finishContainer").style.display = "none";
@@ -89,12 +96,14 @@
                 if (data.message) {
                     console.log(data.message);
                     if (data.message === "Halfway through the experiment") {
+                        document.getElementById("startTextContainer").style.display = "none";
                         document.getElementById("startBtn").style.display = "block";
                         document.getElementById("imageContainer").style.display = "none";
                         document.getElementById("halfwayContainer").style.display = "block";
                         document.getElementById("finishContainer").style.display = "none";
                     }
                     if (data.message === "Experiment finished") {
+                        document.getElementById("startTextContainer").style.display = "none";
                         document.getElementById("startBtn").style.display = "none";
                         document.getElementById("imageContainer").style.display = "none";
                         document.getElementById("halfwayContainer").style.display = "none";
@@ -150,8 +159,9 @@
         }
 
         function loadBlankImage() {
-            document.getElementById("imageContainer").style.display = "none";
+            document.getElementById("startTextContainer").style.display = "none";
             document.getElementById("startBtn").style.display = "none";
+            document.getElementById("imageContainer").style.display = "none";
             document.getElementById("halfwayContainer").style.display = "none";
             document.getElementById("finishContainer").style.display = "none";
         }
