@@ -99,5 +99,36 @@ def reset_auto_increment(table_name):
     with connection.cursor() as cursor:
         cursor.execute(f"ALTER TABLE {table_name} AUTO_INCREMENT = 1")
         
-def pseudo_random():
-    pass
+def pseudo_random(user_id: int) -> str:
+    """Pseudo-randomly select an image from the list, with the generated table in RDS
+
+    Args:
+        image_list (list): List of images
+
+    Returns:
+        str: Image name
+    """
+    log.debug(f"User ID: {user_id}")
+    user_sequences = UserSequence.objects.filter(user_id=user_id).values_list(
+        "seq_N1_1", "seq_N1_2", # Naloga N1 
+        "seq_N2_1", "seq_N2_2" # Naloga N2
+    ).first()
+    
+    first_25 = user_sequences[0] # Naloga N1, čutsveno neobremenilne (N1_1)
+    second_25 = user_sequences[1] # Naloga N1, čutsveno obremenilne (N1_2)
+    third_25 = user_sequences[2] # Naloga N2, čutsveno neobremenilne (N2_1)
+    fourth_25 = user_sequences[3] # Naloga N2, čutsveno obremenilne (N2_2)
+    log.info(f"User {user_id}: first_25={first_25}, second_25={second_25}, third_25={third_25}, fourth_25={fourth_25}")
+    
+    # For now just use the first in the first 25
+    # TODO - implement the logic for the other 3
+    image_list = Sequence.objects.values_list('nms_N1_1', flat=True)
+    log.info(f"Image list: {image_list}")
+    
+    # For now just take first image from the list
+    # TODO - implement the logic for other images
+    image = "images/" + image_list[0] + ".jpg"
+    log.info(f"Image selected: {image}")
+    
+    return image
+    

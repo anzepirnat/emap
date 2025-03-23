@@ -29,6 +29,8 @@ DEBUG = True
 ALLOWED_HOSTS = ["0.0.0.0", "192.168.209.248", "192.168.0.156", "192.168.193.248", "192.168.116.248", "localhost"]
 
 
+LOGIN_URL = "/login/"  # Redirect to login page if user is not logged in
+
 # Application definition
 
 INSTALLED_APPS = [

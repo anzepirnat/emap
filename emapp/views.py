@@ -15,6 +15,7 @@ from django.db import connection
 import os
 from django.conf import settings
 from django.templatetags.static import static
+import time
 
 IMAGE_LIST = [os.path.join("images", image) for image in os.listdir(os.path.join(settings.BASE_DIR, "static/images"))]
 
@@ -23,15 +24,16 @@ def landing_page(request):
     log.info("Landing page accessed")
     return render(request, "emapp/landing_page.html")
 
-
+@login_required
 def app(request):
     return render(request, "emapp/app.html")
 
 
 def get_image(request):
     if request.method == "POST":
-        # Pick a random image
-        new_image = static(random.choice(IMAGE_LIST))#random.choice(IMAGE_LIST)
+        #time.sleep(2)
+        user_sequences = UserSequence.objects.filter(user_id=request.user.id)
+        new_image = static(pseudo_random(request.user.id))#random.choice(IMAGE_LIST)
         log.info(new_image)
         response_data = {
             "image_url": new_image
