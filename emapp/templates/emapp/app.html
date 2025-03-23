@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Selection App</title>
+</head>
+<body>
+    <h1>Welcome to the Image Selection App!</h1>
+
+    <button id="startBtn">Start</button>
+
+    <div id="imageContainer" style="display: none;">
+        <img id="displayImage" src="" alt="Loading..." style="width: 300px;">
+        <br>
+        <button id="yesBtn">Yes</button>
+        <button id="noBtn">No</button>
+    </div>
+
+    <script>
+        document.getElementById("startBtn").addEventListener("click", loadNewImage);
+        document.getElementById("yesBtn").addEventListener("click", loadNewImage);
+        document.getElementById("noBtn").addEventListener("click", loadNewImage);
+
+        function getCSRFToken() {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'csrftoken') {
+                    return value;
+                }
+            }
+            return '';
+        }
+
+        function loadNewImage() {
+            fetch('/api/get-image/', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.image_url) {
+                    document.getElementById("displayImage").src = data.image_url;
+                    document.getElementById("imageContainer").style.display = "block";
+                    document.getElementById("startBtn").style.display = "none";
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+    </script>
+</body>
+</html>
