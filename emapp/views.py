@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 import random
-from .models import Sequence, UserSequence
+from .models import Sequence, UserSequence, Results
 from django.contrib.auth.decorators import login_required
 import ast
 from django.core.exceptions import ValidationError
@@ -16,6 +16,7 @@ import os
 from django.conf import settings
 from django.templatetags.static import static
 import time
+import json
 
 IMAGE_LIST = [os.path.join("images", image) for image in os.listdir(os.path.join(settings.BASE_DIR, "static/images"))]
 
@@ -32,14 +33,56 @@ def app(request):
 def get_image(request):
     if request.method == "POST":
         #time.sleep(2)
-        user_sequences = UserSequence.objects.filter(user_id=request.user.id)
-        new_image = static(pseudo_random(request.user.id))#random.choice(IMAGE_LIST)
-        log.info(new_image)
+        image_name, image_idx = pseudo_random(request.user.id)#random.choice(IMAGE_LIST)
+        image_path = "images/" + image_name + ".jpg"
+        image_url = static(image_path)
+        image_idx += 1
+        log.info(f"{image_url}, {image_idx}")
         response_data = {
-            "image_url": new_image
+            "image_url": image_url,
+            "image_name": image_name,
+            "image_idx": image_idx
         }
+        log.info(f"response_data: {response_data}")
         return JsonResponse(response_data)
     
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+def post_yes(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        log.debug(f"data: {data}")
+        image_name = data.get("image_name")
+        image_idx = data.get("image_idx")
+        if image_name and image_idx:
+            result = Results(
+                user_id=request.user.id,
+                image=image_name,
+                image_idx=image_idx,
+                score="yes"
+            )
+            result.save()
+            return JsonResponse({"message": "Result (yes) saved successfully!"}, status=200)
+        return JsonResponse({"error": "Image name missing"}, status=400)
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+def post_no(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        log.debug(f"data: {data}")
+        image_name = data.get("image_name")
+        image_idx = data.get("image_idx")
+        if image_name and image_idx:
+            result = Results(
+                user_id=request.user.id,
+                image=image_name,
+                image_idx=image_idx,
+                score="no"
+            )
+            result.save()
+            return JsonResponse({"message": "Result (no) saved successfully!"}, status=200)
+        return JsonResponse({"error": "Image name missing"}, status=400)
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 

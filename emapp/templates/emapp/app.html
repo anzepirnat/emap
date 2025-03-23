@@ -12,6 +12,8 @@
 
     <div id="imageContainer" style="display: none;">
         <img id="displayImage" src="" alt="Loading..." style="width: 300px;">
+        <b id="imageIdx"></b><b> / 25</b>
+        <p id="imageName" style="display: none;"></p>
         <br>
         <button id="yesBtn">Yes</button>
         <button id="noBtn">No</button>
@@ -19,8 +21,14 @@
 
     <script>
         document.getElementById("startBtn").addEventListener("click", loadNewImage);
-        document.getElementById("yesBtn").addEventListener("click", loadNewImage);
-        document.getElementById("noBtn").addEventListener("click", loadNewImage);
+        document.getElementById("yesBtn").addEventListener("click", function() {
+            postYes();
+            loadNewImage();
+        });
+        document.getElementById("noBtn").addEventListener("click", function() {
+            postNo();
+            loadNewImage();
+        });
 
         function getCSRFToken() {
             const cookies = document.cookie.split(';');
@@ -48,6 +56,56 @@
                     document.getElementById("imageContainer").style.display = "block";
                     document.getElementById("startBtn").style.display = "none";
                 }
+                if (data.image_name) {
+                    console.log("Image name:", data.image_name);
+                    document.getElementById("imageName").textContent = data.image_name;
+                }
+                if (data.image_idx) {
+                    console.log("Image index:", data.image_idx);
+                    document.getElementById("imageIdx").textContent = data.image_idx;
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+
+        function postYes() {
+            fetch('/api/post-yes/', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({ 
+                    image_name: document.getElementById("imageName").textContent,
+                    image_idx: document.getElementById("imageIdx").textContent
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+
+        function postNo() {
+            fetch('/api/post-no/', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({
+                    image_name: document.getElementById("imageName").textContent,
+                    image_idx: document.getElementById("imageIdx").textContent
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
             })
             .catch(error => {
                 console.error("Error:", error);

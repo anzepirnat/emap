@@ -127,8 +127,9 @@ def pseudo_random(user_id: int) -> str:
     
     # For now just take first image from the list
     # TODO - implement the logic for other images
-    image = "images/" + image_list[0] + ".jpg"
-    log.info(f"Image selected: {image}")
+    image_idx = 0
+    image = image_list[image_idx]
+    log.info(f"Image/Index selected: {image}/{image_idx}")
     
-    return image
+    return image, image_idx
     

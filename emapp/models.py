@@ -34,6 +34,15 @@ class UserSequence(models.Model):
         return f"User {self.user.username} - Sequence {self.id}"
     
 
+class Results(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    image = models.CharField(max_length=50, default="NAN")
+    image_idx = models.IntegerField(default=0)
+    score = models.CharField(max_length=10)
+    
+    def __str__(self):
+        return f"User {self.user.username} - Sequence {self.sequence.id} - Score {self.score}"
+
 # Just testing 
 class TestTableMigration(models.Model):
     test_field = models.CharField(max_length=20)
