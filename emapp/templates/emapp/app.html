@@ -118,7 +118,7 @@
         </div>
         
         <div id="yesnoContainer" class="laterOneThirdContainer">
-            <p>Ali je slika enaka kot ena slika pred njo?</p>
+            <p id="comparisonText"></p>
             
             <div class="counterContainer">
                 <b id="imageIdxInSet"></b><b> / 25</b>
@@ -200,6 +200,11 @@
                 if (data.image_idx) {
                     console.log("Image index:", data.image_idx);
                     document.getElementById("imageIdx").textContent = data.image_idx;
+                    if (parseInt(data.image_idx) <= 50) {
+                        document.getElementById("comparisonText").textContent = "Ali je ta slika enaka kot prva slika pred njo?";
+                    } else {
+                        document.getElementById("comparisonText").textContent = "Ali je ta slika enaka kot druga slika pred njo?";
+                    }
                 }
                 if (data.image_idx_in_set) {
                     console.log("Image index in set:", data.image_idx_in_set);
@@ -278,7 +283,8 @@
             document.getElementById("startTextContainer").style.display = "none";
             document.getElementById("startBtn").style.display = "none";
             document.getElementById("startBtnContainer").style.display = "none";
-            document.getElementById("imageContainer").style.display = "none";
+            document.getElementById("imageContainer").style.display = "flex";
+            document.getElementById("displayImage").src = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
             document.getElementById("halfwayContainer").style.display = "none";
             document.getElementById("finishContainer").style.display = "none";
             document.getElementById("startContainer").style.display = "none";
