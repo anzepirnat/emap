@@ -21,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-f8^b_trj)+1sh*q-sqq7xtzva8-ykk3k!%xrhd2hg=z2wafjjn"
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ["0.0.0.0", "192.168.209.248", "192.168.0.156", "192.168.193.248", "192.168.116.248", "localhost"]
+ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
 
 
 LOGIN_URL = "/login/"  # Redirect to login page if user is not logged in
@@ -83,7 +83,7 @@ DATABASES = {
         'NAME': config('DB_NAME'),
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
-        'HOST': 'localhost',#config('DB_HOST'),
+        'HOST': config('DB_HOST'),
         'PORT': config('DB_PORT'),
     }
 }
@@ -110,9 +110,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = config('LANGUAGE_CODE')
 
-TIME_ZONE = "UTC"
+TIME_ZONE = config('TIME_ZONE')
 
 USE_I18N = True
 
