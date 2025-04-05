@@ -3,6 +3,7 @@
 <html>
 <head>
     <title>Prijava</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'style/style.css' %}">
 </head>
 <body>
     <div class="container">
@@ -13,8 +14,8 @@
             <form method="post">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <button type="submit">Prijavi se</button>
-                <button type="button" onclick="window.location.href='{% url 'landing_page' %}'">Prekliči</button>
+                <button class="btn" type="submit">Prijavi se</button>
+                <button class="btn" type="button" onclick="window.location.href='{% url 'landing_page' %}'">Prekliči</button>
             </form>
         </main>
     </div>
