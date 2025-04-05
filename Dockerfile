@@ -8,16 +8,21 @@ WORKDIR /app
 
 # Install system dependencies for mysqlclient
 RUN apt-get update && apt-get install -y \
-    default-libmysqlclient-dev build-essential \
+    gcc \
+    default-libmysqlclient-dev \
+    libmariadb-dev-compat \
+    python3-dev \
+    build-essential \
     && apt-get clean
 
+# Install Python dependencies
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire project into the container
+# Copy project files
 COPY . /app/
 
 EXPOSE 9000
 
-# Default command
+# Run Django server
 CMD ["python", "manage.py", "runserver", "0.0.0.0:9000"]
