@@ -1,16 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, Http404, JsonResponse
-from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse, Http404, JsonResponse, HttpResponseForbidden
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 import random
 from .models import Sequence, UserSequence, Results
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 import ast
 from django.core.exceptions import ValidationError
 from .forms import UploadExcelForm
-from .utils import excel_to_db, log, reset_auto_increment, pseudo_random
+from .utils import excel_to_db, log, reset_auto_increment, pseudo_random, user_is_admin
 from django.db import connection
 import os
 from django.conf import settings
@@ -103,6 +103,8 @@ def post_no(request):
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 
+@login_required
+@user_passes_test(user_is_admin)
 def edit_data(request):
     if request.method == 'POST' and request.FILES['excel_file']:
         try:
@@ -131,3 +133,52 @@ def edit_data(request):
     # If it's a GET request, just render the page with the file upload form
     form = UploadExcelForm()
     return render(request, 'edit_data.html', {'form': form})
+
+@login_required
+@user_passes_test(user_is_admin)
+def generate_users(request):
+    if request.method == 'POST':
+        try:
+            num_users = int(request.POST.get('num_users', 0))
+            if num_users <= 0:
+                raise ValueError("Number of users must be positive")
+            
+            # Generate random usernames with a random library, each username is unique 6 digit number and each pws is unique 4 digit of numbers and letters
+            usernames = []
+            passwords = []
+            while len(usernames) < num_users:
+                username = str(random.randint(100000, 999999))
+                password = ''.join(random.choices('0123456789abcdefghijklmnopqrstuvwxyz', k=4))
+                password = password.strip()
+                if username not in usernames:
+                    usernames.append(username)
+                    passwords.append(password)
+            # Create users
+            for username, password in zip(usernames, passwords):
+                user = User.objects.create_user(username=username, password=password)
+                user.save()
+                log.info(f"User created successfully. Username: {username}, Password: {password}")
+            
+            # Make output file with all usernames and passwords and send it to the user to download
+            output_file_path = os.path.join(settings.BASE_DIR, 'static', 'output', 'user_credentials.txt')
+            log.info(f"Output file path: {output_file_path}")
+            with open(output_file_path, 'w') as f:
+                for username, password in zip(usernames, passwords):
+                    f.write(f"Username: {username}, Password: {password}\n")
+            log.info(f"User credentials saved to {output_file_path}")
+            # Send file to user
+            with open(output_file_path, 'rb') as f:
+                response = HttpResponse(f.read(), content_type='text/plain')
+                response['Content-Disposition'] = f'attachment; filename="user_credentials.txt"'
+                return response
+            
+            messages.success(request, f"{num_users} users generated successfully.")
+            return redirect('generate_users')
+        
+        except ValueError as e:
+            messages.error(request, str(e))
+        except FileNotFoundError as e:
+            messages.error(request, f"File not found: {e}")
+        except Exception as e:
+            messages.error(request, f"An error occurred: {e}")
+    return render(request, 'generate_users.html')

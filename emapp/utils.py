@@ -2,6 +2,7 @@ import pandas as pd
 from .models import Sequence, UserSequence, Results
 from django.contrib.auth.models import User
 from django.db import connection
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 
 class log:
     _logger = None
@@ -126,6 +127,7 @@ def pseudo_random(user_id: int) -> str:
         return image_list[image_idx-1], image_idx, image_idx
     elif last_image_idx < 25:
         image_idx = last_image_idx + 1
+        image_idx_in_set = image_idx
         log.info(f"First 25 images: {image_idx} / 25")
         first_25 = UserSequence.objects.filter(user_id=user_id).values_list("seq_N1_1", flat=True).first()
         log.info(f"First 25: {first_25}")
@@ -170,4 +172,14 @@ def pseudo_random(user_id: int) -> str:
     else:
         log.error("Invalid image index")
         raise Exception("Invalid image index")
+    
+    
+    
+    
+    
+def user_is_admin(user):
+    if not user.is_superuser:
+        log.error(f"User {user.username} is not superuser")
+        raise PermissionDenied("You do not have permission to access this page.")
+    return user.is_superuser
     

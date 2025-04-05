@@ -3,3 +3,4 @@ venv/
 *.pyc
 emapp/__pycache__/
 landing_page/__pycache__/
+static/output/user_credentials.txt
