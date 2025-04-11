@@ -22,7 +22,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project files
 COPY . /app/
 
-EXPOSE 9000
+EXPOSE 8888
 
 # Run Django server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:9000"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8888"]
