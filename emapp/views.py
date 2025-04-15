@@ -60,7 +60,6 @@ def get_image(request):
             "image_idx": image_idx,
             "image_idx_in_set": image_idx_in_set
         }
-        log.info(f"response_data: {response_data}")
         return JsonResponse(response_data)
     
     return JsonResponse({"error": "Invalid request"}, status=400)
@@ -69,7 +68,6 @@ def get_image(request):
 def post_yes(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        log.debug(f"data: {data}")
         image_name = data.get("image_name")
         image_idx = data.get("image_idx")
         if image_name and image_idx:
@@ -87,7 +85,6 @@ def post_yes(request):
 def post_no(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        log.debug(f"data: {data}")
         image_name = data.get("image_name")
         image_idx = data.get("image_idx")
         if image_name and image_idx:
