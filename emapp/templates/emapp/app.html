@@ -201,9 +201,9 @@
                     console.log("Image index:", data.image_idx);
                     document.getElementById("imageIdx").textContent = data.image_idx;
                     if (parseInt(data.image_idx) <= 50) {
-                        document.getElementById("comparisonText").textContent = "Ali je ta slika enaka kot prva slika pred njo?";
+                        document.getElementById("comparisonText").textContent = "Ali je ta slika enaka kot ena slika pred njo?";
                     } else {
-                        document.getElementById("comparisonText").textContent = "Ali je ta slika enaka kot druga slika pred njo?";
+                        document.getElementById("comparisonText").textContent = "Ali je ta slika enaka kot dve sliki pred njo?";
                     }
                 }
                 if (data.image_idx_in_set) {
