@@ -201,9 +201,21 @@
                     console.log("Image index:", data.image_idx);
                     document.getElementById("imageIdx").textContent = data.image_idx;
                     if (parseInt(data.image_idx) <= 50) {
-                        document.getElementById("comparisonText").textContent = "Ali je ta slika enaka kot ena slika pred njo?";
+                        if (parseInt(data.image_idx) == 1) {
+                            document.getElementById("noBtn").style.display = "none";
+                            document.getElementById("comparisonText").textContent = "Oglejte si sliko in pritisnite gumb Da.";
+                        } else {
+                            document.getElementById("noBtn").style.display = "flex";
+                            document.getElementById("comparisonText").textContent = "Ali je ta slika enaka kot ena slika pred njo?";
+                        }
                     } else {
-                        document.getElementById("comparisonText").textContent = "Ali je ta slika enaka kot dve sliki pred njo?";
+                        if (parseInt(data.image_idx) == 51 || parseInt(data.image_idx) == 52) {
+                            document.getElementById("noBtn").style.display = "none";
+                            document.getElementById("comparisonText").textContent = "Oglejte si sliko in pritisnite gumb Da.";
+                        } else {
+                            document.getElementById("noBtn").style.display = "flex";
+                            document.getElementById("comparisonText").textContent = "Ali je ta slika enaka kot dve sliki pred njo?";
+                        }
                     }
                 }
                 if (data.image_idx_in_set) {
