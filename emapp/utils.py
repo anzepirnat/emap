@@ -2,6 +2,7 @@ import pandas as pd
 from .models import Sequence, UserSequence, Results
 from django.contrib.auth.models import User
 from django.db import connection
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 
 class log:
     _logger = None
@@ -110,59 +111,42 @@ def pseudo_random(user_id: int) -> str:
     Returns:
         str: Image name
     """
-    log.debug(f"User ID: {user_id}")
     
     # SELECT image_idx FROM results WHERE user_id = user_id ORDER BY id DESC LIMIT 1
     last_image_idx = Results.objects.filter(user_id=user_id).order_by('-image_idx').values_list('image_idx', flat=True).first()
-    log.info(f"Last image index: {last_image_idx}, type: {type(last_image_idx)}")
     
     if last_image_idx is None:
         image_idx = 1
-        log.info("There are no images yet, starting with the first")
         first_25 = UserSequence.objects.filter(user_id=user_id).values_list("seq_N1_1", flat=True).first()
-        log.info(f"First 25: {first_25}")
         image_list = Sequence.objects.values_list(first_25, flat=True)
-        log.info(f"Image list: {image_list}")
         return image_list[image_idx-1], image_idx, image_idx
     elif last_image_idx < 25:
         image_idx = last_image_idx + 1
-        log.info(f"First 25 images: {image_idx} / 25")
+        image_idx_in_set = image_idx
         first_25 = UserSequence.objects.filter(user_id=user_id).values_list("seq_N1_1", flat=True).first()
-        log.info(f"First 25: {first_25}")
         image_list = Sequence.objects.values_list(first_25, flat=True)
-        log.info(f"Image list: {image_list}")
         return image_list[image_idx-1], image_idx, image_idx_in_set
     elif last_image_idx < 50:
         image_idx = last_image_idx + 1
         image_idx_in_set = image_idx - 25
-        log.info(f"Second 25 images: {image_idx_in_set} / 25")
         second_25 = UserSequence.objects.filter(user_id=user_id).values_list("seq_N1_2", flat=True).first()
-        log.info(f"Second 25: {second_25}")
         image_list = Sequence.objects.values_list(second_25, flat=True)
-        log.info(f"Image list: {image_list}")
         return image_list[image_idx_in_set-1], image_idx, image_idx_in_set
     elif last_image_idx < 75:
         if last_image_idx == 50:
             half_flag_up = Results.objects.filter(user_id=user_id, image_idx=-1).exists()
             if not half_flag_up:
-                log.info("Halfway through the experiment, raising flag")
                 return "halfway-through", -1, -1
         image_idx = last_image_idx + 1
         image_idx_in_set = image_idx - 50
-        log.info(f"Third 25 images: {image_idx_in_set} / 25")
         third_25 = UserSequence.objects.filter(user_id=user_id).values_list("seq_N2_1", flat=True).first()
-        log.info(f"Third 25: {third_25}")
         image_list = Sequence.objects.values_list(third_25, flat=True)
-        log.info(f"Image list: {image_list}")
         return image_list[image_idx_in_set-1], image_idx, image_idx_in_set
     elif last_image_idx < 100:
         image_idx = last_image_idx + 1
         image_idx_in_set = image_idx - 75
-        log.info(f"Fourth 25 images: {image_idx_in_set} / 25")
         fourth_25 = UserSequence.objects.filter(user_id=user_id).values_list("seq_N2_2", flat=True).first()
-        log.info(f"Fourth 25: {fourth_25}")
         image_list = Sequence.objects.values_list(fourth_25, flat=True)
-        log.info(f"Image list: {image_list}")
         return image_list[image_idx_in_set-1], image_idx, image_idx_in_set
     elif last_image_idx == 100:
         log.info("Experiment is over for user {user_id}")
@@ -170,4 +154,14 @@ def pseudo_random(user_id: int) -> str:
     else:
         log.error("Invalid image index")
         raise Exception("Invalid image index")
+    
+    
+    
+    
+    
+def user_is_admin(user):
+    if not user.is_superuser:
+        log.error(f"User {user.username} is not superuser")
+        raise PermissionDenied("You do not have permission to access this page.")
+    return user.is_superuser
     
