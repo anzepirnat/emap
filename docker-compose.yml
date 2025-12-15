@@ -39,6 +39,8 @@ services:
     volumes:
       - static-volume:/app/staticfiles
       - media-volume:/app/media
+    ports:
+      - "8002:8000"    
 
   nginx:
     image: nginx:latest
