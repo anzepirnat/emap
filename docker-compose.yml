@@ -46,8 +46,15 @@ services:
     restart: always
     depends_on:
       - app
+    
     ports:
-      - "${WEB_PORT}:80"
+      - target: 80
+        published: ${WEB_PORT}
+        protocol: tcp
+        mode: ingress
+
+#    ports:
+#      - "${WEB_PORT}:80"
     volumes:
       - ./nginx:/etc/nginx/conf.d:ro
       - static-volume:/app/staticfiles
