@@ -42,18 +42,18 @@ services:
     expose:
       - "8000" 
 
-nginx:
-    image: nginx:latest
-    container_name: emap-nginx
-    restart: always
-    ports:
-      - "${WEB_PORT:-80}:80"  # Configurable external port, defaults to 80
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - static-volume:/app/staticfiles:ro
-      - media-volume:/app/media:ro
-    depends_on:
-      - app
+  nginx:
+      image: nginx:latest
+      container_name: emap-nginx
+      restart: always
+      ports:
+        - "${WEB_PORT:-80}:80"  # Configurable external port, defaults to 80
+      volumes:
+        - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+        - static-volume:/app/staticfiles:ro
+        - media-volume:/app/media:ro
+      depends_on:
+        - app
 
 volumes:
   db-data:
