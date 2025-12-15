@@ -46,7 +46,13 @@ emap/
 
 Access your app at: `http://your-server-ip:WEB_PORT`
 
-> The database will be initialized automatically on **first deployment only** using `sql/init.sql`.
+> The database will be initialized automatically on **first deployment only** using `sql/init.sql`. Caution: init.sql MUST begin with 
+  
+-- Ensure we are in the right database for all statements
+CREATE DATABASE IF NOT EXISTS `emapp` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
+USE `emapp`;
+
+
 
 ## Local Development / Testing
 
