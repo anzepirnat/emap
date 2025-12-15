@@ -39,19 +39,8 @@ services:
     volumes:
       - static-volume:/app/staticfiles
       - media-volume:/app/media
-
-  nginx:
-    image: nginx:latest
-    container_name: emap-nginx
-    restart: always
-    depends_on:
-      - app
     ports:
       - "${WEB_PORT}:80"
-    volumes:
-      - ./nginx:/etc/nginx/conf.d:ro
-      - static-volume:/app/staticfiles
-      - media-volume:/app/media   
 
 volumes:
   db-data:
