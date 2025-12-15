@@ -40,20 +40,27 @@ services:
       - static-volume:/app/staticfiles
       - media-volume:/app/media
     expose:
-      - "8000" 
+      - "8000"    
 
   nginx:
-      image: nginx:latest
-      container_name: emap-nginx
-      restart: always
-      ports:
-        - "${WEB_PORT:-80}:80"  # Configurable external port, defaults to 80
-      volumes:
-        - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-        - static-volume:/app/staticfiles:ro
-        - media-volume:/app/media:ro
-      depends_on:
-        - app
+    image: nginx:latest
+    container_name: emap-nginx
+    restart: always
+    depends_on:
+      - app
+    
+    ports:
+      - target: 80
+        published: ${WEB_PORT}
+        protocol: tcp
+        mode: ingress
+
+#    ports:
+#      - "${WEB_PORT}:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d:ro
+      - static-volume:/app/staticfiles
+      - media-volume:/app/media   
 
 volumes:
   db-data:
