@@ -1,7 +1,10 @@
 
 services:
   db:
-    image: mariadb:10.6  # Stable version; avoids bugs in newer/latest
+    build:
+      context: .
+      dockerfile: docker/db/Dockerfile
+    image: emap-mariadb:10.6
     container_name: emap-db
     restart: always
     environment:
@@ -12,7 +15,6 @@ services:
       MARIADB_AUTO_UPGRADE: '1'  # Recreates internal healthcheck user if needed
     volumes:
       - db-data:/var/lib/mysql
-      - ./sql:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD", "/usr/local/bin/healthcheck.sh", "--connect", "--innodb_initialized"]
       start_period: 60s   # Wait 60s before first check (critical for init.sql)
