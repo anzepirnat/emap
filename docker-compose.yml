@@ -39,8 +39,8 @@ services:
     volumes:
       - static-volume:/app/staticfiles
       - media-volume:/app/media
-expose:
-      - "8000"  # Internal only, accessible to nginx
+    expose:
+      - "8000" 
 
 nginx:
     image: nginx:latest
