@@ -39,8 +39,6 @@ services:
     volumes:
       - static-volume:/app/staticfiles
       - media-volume:/app/media
-    expose:
-      - "8000"    
 
   nginx:
     image: nginx:latest
@@ -48,15 +46,8 @@ services:
     restart: always
     depends_on:
       - app
-    
     ports:
-      - target: 80
-        published: ${WEB_PORT}
-        protocol: tcp
-        mode: ingress
-
-#    ports:
-#      - "${WEB_PORT}:80"
+      - "${WEB_PORT}:80"
     volumes:
       - ./nginx:/etc/nginx/conf.d:ro
       - static-volume:/app/staticfiles
