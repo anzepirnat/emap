@@ -40,7 +40,7 @@ services:
       - static-volume:/app/staticfiles
       - media-volume:/app/media
     ports:
-      - "${WEB_PORT}:80"
+      - "${WEB_PORT}:8000"
 
 volumes:
   db-data:
