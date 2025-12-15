@@ -12,7 +12,7 @@ services:
       MARIADB_AUTO_UPGRADE: '1'  # Recreates internal healthcheck user if needed
     volumes:
       - db-data:/var/lib/mysql
-      - ./sql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./sql:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD", "/usr/local/bin/healthcheck.sh", "--connect", "--innodb_initialized"]
       start_period: 60s   # Wait 60s before first check (critical for init.sql)
