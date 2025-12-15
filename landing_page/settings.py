@@ -26,7 +26,11 @@ SECRET_KEY = config('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS')
+raw_hosts = config('DJANGO_ALLOWED_HOSTS')
+ALLOWED_HOSTS = [h.strip() for h in raw_hosts.split(",") if h.strip()]
+if ALLOWED_HOSTS == ["*"]:
+    ALLOWED_HOSTS = ["*"]
+
 #ALLOWED_HOSTS = ['*']
 
 LOGIN_URL = "/login/"  # Redirect to login page if user is not logged in

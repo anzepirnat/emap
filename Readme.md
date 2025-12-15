@@ -97,7 +97,7 @@ Access your app at: `http://your-server-ip:WEB_PORT`
 
 ## Customization
 
-- Change Django project name? Update the Gunicorn command in `Dockerfile` (currently `emapp.wsgi:application`).
+- Change Django project name? Update the Gunicorn command in `Dockerfile` (currently `landing_page.wsgi:application`).
 - Add more environment variables in `docker-compose.yml` and use them in `emapp/settings.py`.
 - Adjust `nginx.conf` for custom domains, SSL (recommend external reverse proxy like Traefik or Caddy for HTTPS), or larger uploads.
 
